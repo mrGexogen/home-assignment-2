@@ -15,297 +15,265 @@ class TopicTest(TestCase):
     BLOG = 'Флудилка'
     TITLE = 'Awesome title'
     TEXT = 'Awesome text'
+    IMG = "img/logo.png"
+    IMG_URL = "ftest.stud.tech-mail.ru/media/site/logo_1.png"
 
     def setUp(self):
+        self.LINK = "http://ya.ru/"
         browser = os.environ.get("TTHA2BROWSER", "CHROME")
         self.driver = webdriver.Remote(desired_capabilities=getattr(DesiredCapabilities, browser))
-        self.TOPIC_PAGE = TopicPage(self.driver)
+        self.topic = TopicPage(self.driver).topic
 
         auth_page = AuthPage(self.driver)
         auth_page.open()
         auth_page.login(self.USER_EMAIL, self.USER_PASSWD)
-        self.create_page = CreatePage(self.driver)
-        self.create_page.open()
+
+        create_page = CreatePage(self.driver)
+        create_page.open()
+
+        self.form = create_page.form
+        self.form.blog_select_open()
+        self.form.blog_select_set_option(self.BLOG)
+        self.form.set_title(self.TITLE)
 
     def tearDown(self):
-        self.TOPIC_PAGE.topic.delete()
+        self.topic.delete()
         self.driver.quit()
 
     def test_create_simple_topic(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
-        self.create_page.form.set_main_text(self.TEXT)
-        self.create_page.form.submit()
+        self.form.set_main_text(self.TEXT)
+        self.form.submit()
 
-        self.assertEqual(self.TITLE, self.TOPIC_PAGE.topic.get_title())
-        self.assertEqual(self.TEXT, self.TOPIC_PAGE.topic.get_text(""))
+        self.assertEqual(self.TITLE, self.topic.get_title())
+        self.assertEqual(self.TEXT, self.topic.get_text(""))
 
     def test_create_bold(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
-        self.create_page.form.editor.bold()
-        self.create_page.form.set_main_text(self.TEXT)
-        self.create_page.form.submit()
+        self.form.editor.bold()
 
-        self.assertEqual(self.TEXT, self.TOPIC_PAGE.topic.get_text("/strong"))
+        self.form.set_main_text(self.TEXT)
+        self.form.submit()
+
+        self.assertEqual(self.TEXT, self.topic.get_text("/strong"))
 
     def test_create_italic(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
-        self.create_page.form.editor.italic()
-        self.create_page.form.set_main_text(self.TEXT)
-        self.create_page.form.submit()
+        self.form.editor.italic()
 
-        self.assertEqual(self.TEXT, self.TOPIC_PAGE.topic.get_text("/em"))
+        self.form.set_main_text(self.TEXT)
+        self.form.submit()
+
+        self.assertEqual(self.TEXT, self.topic.get_text("/em"))
 
     def test_create_stroke(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
-        self.create_page.form.editor.stroke()
-        self.create_page.form.set_main_text(self.TEXT)
-        self.create_page.form.submit()
+        self.form.editor.stroke()
 
-        self.assertEqual(self.TEXT, self.TOPIC_PAGE.topic.get_text("/s"))
+        self.form.set_main_text(self.TEXT)
+        self.form.submit()
+
+        self.assertEqual(self.TEXT, self.topic.get_text("/s"))
 
     def test_create_underline(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
-        self.create_page.form.editor.underline()
-        self.create_page.form.set_main_text(self.TEXT)
-        self.create_page.form.submit()
+        self.form.editor.underline()
 
-        self.assertEqual(self.TEXT, self.TOPIC_PAGE.topic.get_text("/u"))
+        self.form.set_main_text(self.TEXT)
+        self.form.submit()
+
+        self.assertEqual(self.TEXT, self.topic.get_text("/u"))
 
     # после клика на quote каретка устанавливается в конце <blockquote></blockquote>
     # по сравнению с остальными кнопками - баг
     def test_create_blockquote(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
-        self.create_page.form.editor.quote()
-        self.create_page.form.set_main_text(self.TEXT)
-        self.create_page.form.submit()
+        self.form.editor.quote()
+
+        self.form.set_main_text(self.TEXT)
+        self.form.submit()
 
         # self.assertEqual(self.TEXT, self.TOPIC_PAGE.topic.get_text("/blockquote"))
-        self.assertEqual(self.TEXT, self.TOPIC_PAGE.topic.get_text(""))
+        self.assertEqual(self.TEXT, self.topic.get_text(""))
 
     def test_create_code(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
-        self.create_page.form.editor.code()
-        self.create_page.form.set_main_text(self.TEXT)
-        self.create_page.form.submit()
+        self.form.editor.code()
 
-        self.assertEqual(self.TEXT, self.TOPIC_PAGE.topic.get_text("/code"))
+        self.form.set_main_text(self.TEXT)
+        self.form.submit()
+
+        self.assertEqual(self.TEXT, self.topic.get_text("/code"))
 
     def test_create_ul(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
-        self.create_page.form.editor.ul()
-        self.create_page.form.set_main_text(self.TEXT)
-        self.create_page.form.submit()
+        self.form.editor.ul()
 
-        self.assertEqual(self.TEXT, self.TOPIC_PAGE.topic.get_text("/ul/li"))
+        self.form.set_main_text(self.TEXT)
+        self.form.submit()
+
+        self.assertEqual(self.TEXT, self.topic.get_text("/ul/li"))
 
     def test_create_ol(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
-        self.create_page.form.editor.ol()
-        self.create_page.form.set_main_text(self.TEXT)
-        self.create_page.form.submit()
+        self.form.editor.ol()
 
-        self.assertEqual(self.TEXT, self.TOPIC_PAGE.topic.get_text("/ol/li"))
+        self.form.set_main_text(self.TEXT)
+        self.form.submit()
+
+        self.assertEqual(self.TEXT, self.topic.get_text("/ol/li"))
 
     def test_create_h4(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
-        self.create_page.form.editor.h4()
-        self.create_page.form.set_main_text(self.TEXT)
-        self.create_page.form.submit()
+        self.form.editor.h4()
 
-        self.assertEqual(self.TEXT, self.TOPIC_PAGE.topic.get_text("/h4"))
+        self.form.set_main_text(self.TEXT)
+        self.form.submit()
+
+        self.assertEqual(self.TEXT, self.topic.get_text("/h4"))
 
     def test_create_h5(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
-        self.create_page.form.editor.h5()
-        self.create_page.form.set_main_text(self.TEXT)
-        self.create_page.form.submit()
+        self.form.editor.h5()
 
-        self.assertEqual(self.TEXT, self.TOPIC_PAGE.topic.get_text("/h5"))
+        self.form.set_main_text(self.TEXT)
+        self.form.submit()
+
+        self.assertEqual(self.TEXT, self.topic.get_text("/h5"))
 
     def test_create_h6(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
-        self.create_page.form.editor.h6()
-        self.create_page.form.set_main_text(self.TEXT)
-        self.create_page.form.submit()
+        self.form.editor.h6()
 
-        self.assertEqual(self.TEXT, self.TOPIC_PAGE.topic.get_text("/h6"))
+        self.form.set_main_text(self.TEXT)
+        self.form.submit()
+
+        self.assertEqual(self.TEXT, self.topic.get_text("/h6"))
 
     def test_create_img_upload(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
+        self.form.editor.img()
 
-        self.create_page.form.editor.img()
-        self.create_page.form.img_menu.set_img("img/logo.png")
-        self.create_page.form.img_menu.set_title_local(self.TITLE)
-        self.create_page.form.img_menu.submit_local()
+        img_menu = self.form.img_menu
+        img_menu.img_input_local()
+        img_menu.set_img(self.IMG)
+        img_menu.set_title_local(self.TITLE)
+        img_menu.submit_local()
 
         sleep(0.1)  # Element is not clickable at point - chromedriver's bug
-        self.create_page.form.submit()
+        self.form.submit()
 
-        self.assertIsNotNone(self.TOPIC_PAGE.topic.get_img_src())
+        self.assertIsNotNone(self.topic.get_tag_attr("/img", "src"))
 
     def test_create_img_remote(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
+        self.form.editor.img()
 
-        self.create_page.form.editor.img()
-        self.create_page.form.img_menu.img_src_remote()
-        self.create_page.form.img_menu.set_img_url("ftest.stud.tech-mail.ru/media/site/logo_1.png")
-        self.create_page.form.img_menu.set_title_remote(self.TITLE)
-        self.create_page.form.img_menu.submit_remote()
+        img_menu = self.form.img_menu
+        img_menu.img_input_remote()
+        img_menu.set_img_url(self.IMG_URL)
+        img_menu.set_title_remote(self.TITLE)
+        img_menu.submit_remote()
 
         sleep(0.5)  # Element is not clickable at point - chromedriver's bug
-        self.create_page.form.submit()
+        self.form.submit()
 
-        self.assertIsNotNone(self.TOPIC_PAGE.topic.get_img_src())
+        self.assertIsNotNone(self.topic.get_tag_attr("/img", "src"))
 
     def test_create_img_remote_link(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
+        self.form.editor.img()
 
-        self.create_page.form.editor.img()
-        self.create_page.form.img_menu.img_src_remote()
-        self.create_page.form.img_menu.set_img_url("ftest.stud.tech-mail.ru/media/site/logo_1.png")
-        self.create_page.form.img_menu.set_title_remote(self.TITLE)
-        self.create_page.form.img_menu.submit_remote_link()
+        img_menu = self.form.img_menu
+        img_menu.img_input_remote()
+        img_menu.set_img_url(self.IMG_URL)
+        img_menu.set_title_remote(self.TITLE)
+        img_menu.submit_remote_link()
 
         sleep(0.5)  # Element is not clickable at point - chromedriver's bug
-        self.create_page.form.submit()
+        self.form.submit()
 
-        self.assertEqual("http://ftest.stud.tech-mail.ru/media/site/logo_1.png", self.TOPIC_PAGE.topic.get_img_src())
+        self.assertEqual("http://" + self.IMG_URL, self.topic.get_tag_attr("/img", "src"))
 
     # выравнивание по центру не отлиается от нет и слева - баг
     def test_create_img_upload_align(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
+        self.form.editor.img()
 
-        self.create_page.form.editor.img()
-        self.create_page.form.img_menu.set_img("img/logo.png")
-        self.create_page.form.img_menu.set_title_local(self.TITLE)
-        self.create_page.form.img_menu.align_open_local()
-        self.create_page.form.img_menu.align_select_local('по центру')
-        self.create_page.form.img_menu.submit_local()
+        img_menu = self.form.img_menu
+        img_menu.img_input_local()
+        img_menu.set_img(self.IMG)
+        img_menu.set_title_local(self.TITLE)
+
+        img_menu.align_open_local()
+        img_menu.align_select_local('по центру')
+        img_menu.submit_local()
 
         sleep(0.1)  # Element is not clickable at point - chromedriver's bug
-        self.create_page.form.submit()
+        self.form.submit()
 
-        self.assertEqual('center', self.TOPIC_PAGE.topic.get_img_align())
+        self.assertEqual('center', self.topic.get_tag_attr("/img", "align"))
 
     def test_create_img_remote_align(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
+        self.form.editor.img()
 
-        self.create_page.form.editor.img()
-        self.create_page.form.img_menu.img_src_remote()
-        self.create_page.form.img_menu.set_img_url("ftest.stud.tech-mail.ru/media/site/logo_1.png")
-        self.create_page.form.img_menu.set_title_remote(self.TITLE)
-        self.create_page.form.img_menu.align_open_remote()
-        self.create_page.form.img_menu.align_select_remote('по центру')
-        self.create_page.form.img_menu.submit_remote()
+        img_menu = self.form.img_menu
+        img_menu.img_input_remote()
+        img_menu.set_img_url(self.IMG_URL)
+        img_menu.set_title_remote(self.TITLE)
+
+        img_menu.align_open_remote()
+        img_menu.align_select_remote('по центру')
+        img_menu.submit_remote()
 
         sleep(0.5)  # Element is not clickable at point - chromedriver's bug
-        self.create_page.form.submit()
+        self.form.submit()
 
-        self.assertEqual('center', self.TOPIC_PAGE.topic.get_img_align())
+        self.assertEqual('center', self.topic.get_tag_attr("/img", "align"))
 
     def test_create_img_remote_link_align(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
+        self.form.editor.img()
 
-        self.create_page.form.editor.img()
-        self.create_page.form.img_menu.img_src_remote()
-        self.create_page.form.img_menu.set_img_url("ftest.stud.tech-mail.ru/media/site/logo_1.png")
-        self.create_page.form.img_menu.set_title_remote(self.TITLE)
-        self.create_page.form.img_menu.set_title_remote(self.TITLE)
-        self.create_page.form.img_menu.align_open_remote()
-        self.create_page.form.img_menu.align_select_remote('по центру')
-        self.create_page.form.img_menu.submit_remote_link()
+        img_menu = self.form.img_menu
+        img_menu.img_input_remote()
+        img_menu.set_img_url(self.IMG_URL)
+        img_menu.set_title_remote(self.TITLE)
+
+        img_menu.align_open_remote()
+        img_menu.align_select_remote('по центру')
+        img_menu.submit_remote_link()
 
         sleep(0.5)  # Element is not clickable at point - chromedriver's bug
-        self.create_page.form.submit()
+        self.form.submit()
 
-        self.assertEqual('center', self.TOPIC_PAGE.topic.get_img_align())
+        self.assertEqual('center', self.topic.get_tag_attr("/img", "align"))
 
     def test_create_link(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
+        self.form.editor.link()
 
-        self.create_page.form.editor.link()
-        self.create_page.form.link_input.set_link("http://ya.ru/")
-        self.create_page.form.link_input.submit()
+        link_input = self.form.link_input
+        link_input.set_link(self.LINK)
+        link_input.submit()
 
-        self.create_page.form.set_main_text(self.TEXT)
-        self.create_page.form.submit()
+        self.form.set_main_text(self.TEXT)
+        self.form.submit()
 
-        self.assertEqual(self.TEXT, self.TOPIC_PAGE.topic.get_text('/a'))
-        self.assertEqual("http://ya.ru/", self.TOPIC_PAGE.topic.get_link())
+        self.assertEqual(self.TEXT, self.topic.get_text('/a'))
+        self.assertEqual(self.LINK, self.topic.get_tag_attr('/a', 'href'))
 
     def test_create_user(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
+        self.form.editor.user()
 
-        self.create_page.form.editor.user()
-        self.create_page.form.user_input.set_search(u"Котегов")
-        self.create_page.form.user_input.choose_user()
+        user_input = self.form.user_input
+        user_input.set_search(u"Котегов")
+        user_input.choose_user()
 
-        self.create_page.form.submit()
+        self.form.submit()
 
-        self.assertEqual(u'Дмитрий Котегов', self.TOPIC_PAGE.topic.get_text('/a'))
-        self.assertEqual(u"http://ftest.stud.tech-mail.ru/profile/dm.kotegov/", self.TOPIC_PAGE.topic.get_link())
+        self.assertEqual(u'Дмитрий Котегов', self.topic.get_text('/a'))
+        self.assertEqual(u"http://ftest.stud.tech-mail.ru/profile/dm.kotegov/", self.topic.get_tag_attr('/a', 'href'))
 
     def test_create_no_comment(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
-        self.create_page.form.set_main_text(self.TEXT)
-        self.create_page.form.toggle_comment()
-        self.create_page.form.submit()
+        self.form.toggle_comment()
 
-        self.assertFalse(self.TOPIC_PAGE.topic.is_comment_present())
+        self.form.set_main_text(self.TEXT)
+        self.form.submit()
+
+        self.assertFalse(self.topic.is_comment_present())
 
     def test_create_poll(self):
-        self.create_page.form.blog_select_open()
-        self.create_page.form.blog_select_set_option(self.BLOG)
-        self.create_page.form.set_title(self.TITLE)
-        self.create_page.form.set_main_text(self.TEXT)
+        self.form.set_main_text(self.TEXT)
 
-        self.create_page.form.toggle_poll()
-        self.create_page.form.poll.set_question("Question")
-        self.create_page.form.poll.set_answer(0, "Answer 1")
-        self.create_page.form.poll.set_answer(1, "Answer 2")
+        self.form.toggle_poll()
+        poll = self.form.poll
+        poll.set_question("Question")
+        poll.set_answer(0, "Answer 1")
+        poll.set_answer(1, "Answer 2")
 
-        self.create_page.form.submit()
+        self.form.submit()
 
-        self.assertTrue(self.TOPIC_PAGE.topic.is_answer_present())
+        self.assertTrue(self.topic.is_answer_present())

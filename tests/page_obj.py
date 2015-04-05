@@ -60,9 +60,3 @@ class TopicPage(Page):
     @property
     def topic(self):
         return Topic(self.driver)
-
-
-class BlogPage(Page):
-    @property
-    def topic(self):
-        return Topic(self.driver)

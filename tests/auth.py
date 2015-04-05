@@ -5,7 +5,6 @@ from unittest import TestCase
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
 
-from tests.components import TopMenu
 from tests.page_obj import AuthPage
 
 
@@ -25,5 +24,5 @@ class AuthTest(TestCase):
         page = AuthPage(self.driver)
         page.open()
         page.login(self.USER_EMAIL, self.USER_PASSWD)
-        username = TopMenu(self.driver).get_username()
-        self.assertEqual(username, self.USER_NAME)
+
+        self.assertEqual(self.USER_NAME, page.top_menu.get_username())

@@ -202,14 +202,14 @@ class ImgMenu(Component):
     ALIGN_OPT = ALIGN + '/option[contains(text(),"{}")]'
     IMG_SRC = '//a[contains(text(),"{}")]'
 
-    def _img_src(self, src):
+    def _img_input(self, src):
         self.find(self.IMG_SRC.format(src)).click()
 
-    def img_src_local(self):
-        self._img_src("С компьютера")
+    def img_input_local(self):
+        self._img_input("С компьютера")
 
-    def img_src_remote(self):
-        self._img_src("Из интернета")
+    def img_input_remote(self):
+        self._img_input("Из интернета")
 
     def set_img(self, img):
         self.find(self.IMG_INPUT).send_keys(os.path.abspath(img))
@@ -275,24 +275,14 @@ class Topic(Component):
             lambda d: d.find_element_by_xpath(self.TEXT.format(tag)).text
         )
 
+    def get_tag_attr(self, tag, attr):
+        return WebDriverWait(self.driver, 5, 0.1).until(
+            lambda d: d.find_element_by_xpath(self.TEXT.format(tag)).get_attribute(attr)
+        )
+
     def delete(self):
         self.find(self.DELETE_BUTTON).click()
         self.find(self.DELETE_BUTTON_CONFIRM).click()
-
-    def get_img_src(self):
-        return WebDriverWait(self.driver, 5, 0.1).until(
-            lambda d: d.find_element_by_xpath(self.TEXT.format("/img")).get_attribute('src')
-        )
-
-    def get_img_align(self):
-        return WebDriverWait(self.driver, 5, 0.1).until(
-            lambda d: d.find_element_by_xpath(self.TEXT.format("/img")).get_attribute('align')
-        )
-
-    def get_link(self):
-        return WebDriverWait(self.driver, 5, 0.1).until(
-            lambda d: d.find_element_by_xpath(self.TEXT.format("/a")).get_attribute('href')
-        )
 
     def is_comment_present(self):
         try:
