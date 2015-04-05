@@ -281,8 +281,11 @@ class Topic(Component):
         )
 
     def delete(self):
-        self.find(self.DELETE_BUTTON).click()
-        self.find(self.DELETE_BUTTON_CONFIRM).click()
+        try:
+            self.find(self.DELETE_BUTTON).click()
+            self.find(self.DELETE_BUTTON_CONFIRM).click()
+        except NoSuchElementException:
+            pass
 
     def is_comment_present(self):
         try:
