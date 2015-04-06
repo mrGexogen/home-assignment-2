@@ -14,6 +14,13 @@ class Component(object):
     def find(self, xpath):
         return self.driver.find_element_by_xpath(xpath)
 
+    def is_present(self, locator):
+        try:
+            self.find(locator)
+        except NoSuchElementException:
+            return False
+        return True
+
 
 class AuthForm(Component):
     LOGIN = '//input[@name="login"]'
@@ -291,15 +298,7 @@ class Topic(Component):
             pass
 
     def is_comment_present(self):
-        try:
-            self.find(self.COMMENT)
-        except NoSuchElementException:
-            return False
-        return True
+        return self.is_present(self.COMMENT)
 
     def is_answer_present(self):
-        try:
-            self.find(self.ANSWER)
-        except NoSuchElementException:
-            return False
-        return True
+        return self.is_present(self.ANSWER)
