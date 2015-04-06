@@ -89,6 +89,15 @@ class TopicTest(TestCase):
         self.assertTrue(self.topic.is_present(self.topic.TEXT.format('/blockquote')))
         self.assertEqual(self.TEXT, self.topic.get_text(""))
 
+    def test_create_blockquote_select(self):
+        self.form.set_main_text(self.TEXT)
+        self.form.select_text()
+        self.form.editor.quote()
+
+        self.form.submit()
+
+        self.assertEqual(self.TEXT, self.topic.get_text("/blockquote"))
+
     def test_create_code(self):
         self.form.editor.code()
 

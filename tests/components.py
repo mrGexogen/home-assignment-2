@@ -3,6 +3,7 @@ import os
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.expected_conditions import alert_is_present, invisibility_of_element_located
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -79,6 +80,9 @@ class CreateForm(Component):
 
     def toggle_poll(self):
         self.find(self.POLL).click()
+
+    def select_text(self):
+        self.find(self.MAIN_TEXT).send_keys(Keys.CONTROL, 'a')
 
     @property
     def editor(self):
