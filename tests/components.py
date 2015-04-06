@@ -2,8 +2,8 @@
 import os
 
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.support.expected_conditions import alert_is_present
-
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.expected_conditions import alert_is_present, invisibility_of_element_located
 from selenium.webdriver.support.wait import WebDriverWait
 
 
@@ -228,6 +228,9 @@ class ImgMenu(Component):
 
     def _submit(self, dst):
         self.find(self.SUBMIT.format(dst)).click()
+        WebDriverWait(self.driver, 5, 0.1).until(
+            invisibility_of_element_located((By.XPATH, '//div[@id="window_upload_img"]'))
+        )
 
     def submit_local(self):
         self._submit('submit-image-upload')

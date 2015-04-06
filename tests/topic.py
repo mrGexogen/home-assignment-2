@@ -1,6 +1,5 @@
 # coding=utf-8
 import os
-from time import sleep
 from unittest import TestCase
 
 from selenium import webdriver
@@ -147,7 +146,6 @@ class TopicTest(TestCase):
         img_menu.set_title_local(self.TITLE)
         img_menu.submit_local()
 
-        sleep(0.1)  # Element is not clickable at point - chromedriver's bug
         self.form.submit()
 
         self.assertIsNotNone(self.topic.get_tag_attr("/img", "src"))
@@ -161,7 +159,6 @@ class TopicTest(TestCase):
         img_menu.set_title_remote(self.TITLE)
         img_menu.submit_remote()
 
-        sleep(0.5)  # Element is not clickable at point - chromedriver's bug
         self.form.submit()
 
         self.assertIsNotNone(self.topic.get_tag_attr("/img", "src"))
@@ -175,7 +172,6 @@ class TopicTest(TestCase):
         img_menu.set_title_remote(self.TITLE)
         img_menu.submit_remote_link()
 
-        sleep(0.5)  # Element is not clickable at point - chromedriver's bug
         self.form.submit()
 
         self.assertEqual("http://" + self.IMG_URL, self.topic.get_tag_attr("/img", "src"))
@@ -193,7 +189,6 @@ class TopicTest(TestCase):
         img_menu.align_select_local('по центру')
         img_menu.submit_local()
 
-        sleep(0.1)  # Element is not clickable at point - chromedriver's bug
         self.form.submit()
 
         self.assertEqual('center', self.topic.get_tag_attr("/img", "align"))
@@ -210,7 +205,6 @@ class TopicTest(TestCase):
         img_menu.align_select_remote('по центру')
         img_menu.submit_remote()
 
-        sleep(0.5)  # Element is not clickable at point - chromedriver's bug
         self.form.submit()
 
         self.assertEqual('center', self.topic.get_tag_attr("/img", "align"))
@@ -227,7 +221,6 @@ class TopicTest(TestCase):
         img_menu.align_select_remote('по центру')
         img_menu.submit_remote_link()
 
-        sleep(0.5)  # Element is not clickable at point - chromedriver's bug
         self.form.submit()
 
         self.assertEqual('center', self.topic.get_tag_attr("/img", "align"))
